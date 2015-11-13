@@ -1,0 +1,203 @@
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Charts.js</title>
+  <style>
+    body {
+        background: #222;
+    }
+
+    .graph-holder {
+        width: 80%;
+        height: 300px;
+        overflow: hidden;
+
+
+    }
+
+    .graph-holder.small {
+        width: 800px;
+        height: 80px;
+    }
+
+
+    .timeline-holder {
+        width: 80%;
+        height: 40px;
+        overflow: hidden;
+    }
+
+    .dot {
+        z-index: 10;
+        background: #ffffff;
+        position: absolute;
+        display: block;
+        width: 5px;
+        height: 5px;
+
+        border-radius: 50%;
+    }
+  </style>
+</head>
+<body class="no-transitions">
+    <div class="graph-holder">
+        <canvas id="graph1" height="0" width="0">
+
+        </canvas>
+        <div class="dot"></div>
+    </div>
+
+    <div class="timeline-holder">
+        <canvas id="timeline1" height="0" width="0">
+
+        </canvas>
+    </div>
+
+    <div class="graph-holder small">
+        <canvas id="graph2" height="0" width="0">
+
+        </canvas>
+    </div>
+<div id="tooltip">
+</div>
+    <script src="js/Charts.build.js" > </script>
+    <script>
+
+        /* ---- Graph 1 ---- */
+        var graph = new Charts.Graph("graph1", {
+            marginTop: 20,
+            marginBottom: 20,
+            marginRight: 20,
+            marginLeft: 20,
+            topFrame: true,
+            rightFrame: true,
+            animated: true
+        });
+        var _curve = [
+            {x: 0, y:0},
+            {x: 1, y:1},
+            {x: 2, y:3},
+            {x: 3, y:2}
+        ];
+
+        var _curve2 = [
+            {x: 0, y:0},
+            {x: 1, y:2},
+            {x: 2, y:1.5},
+            {x: 3, y:3}
+        ];
+
+        graph.addCurve(_curve, {
+            curveBackground: "#333333"
+        });
+        graph.addCurve(_curve2, {
+            strokeStyle: "green",
+            curveBackground: "rgba(0,0,0,0.5)"
+        });
+
+
+        graph.addTooltip(document.getElementById("tooltip"), _curve, {
+            hoverTreshold: 3,
+            onMousemove: function(tooltip, val) {
+                tooltip.innerHTML = "x:"+val.valX+ ";y:"+val.valY+"<br/>coord X:"+val.x+";coord Y:"+val.y;
+                document.getElementsByClassName("dot")[0].style.left = val.x+"px";
+                document.getElementsByClassName("dot")[0].style.top = val.y+"px";
+            },
+            onMouseleave: function() {
+                tooltip.innerHTML = "";
+            }
+        });
+        graph.addMarker(1,1);
+
+        graph.forEachPoint([{x:1,y:0}, {x:2,y:0}, {x:3,y:0}], function(x, y) {
+            graph.addLine("x", x, y,20, {strokeStyle:"#ffffff"});
+        });
+
+        graph.forEachPoint([{x:0,y:1}, {x:0,y:2}, {x:0,y:3}], function(x, y) {
+            graph.addLine("y", x, y,20);
+        });
+
+
+        graph.render();
+        graph.addLabel("label",1, 1.2, { fillStyle: "green", fontWeight: "bold", fontSize: "20px"});
+
+
+        /* ---- Timeline 1 ---- */
+
+        var timeline = new Charts.Timeline("timeline1");
+        var timelineMarkers = [0.5, 1, 2.2];
+
+        timeline.addGrid([0,1,2,3], {
+            gridStyle: '#ffffff',
+            gridMax: 3,
+            gridOffset: 10
+        });
+
+        timeline.render();
+
+        for (var i =0, j = timelineMarkers.length; i<j; i++) {
+            timeline.addMarker( timelineMarkers[i] );
+        }
+
+        timeline.addMarker( 1.5, 0, {
+            img: "img/pin.png" ,
+            scale: 0.5
+        });
+        timeline.addLabel("label",2, 10, { fillStyle: "green"});
+        timeline.addTooltip(document.getElementById("tooltip"), [0,1,2,3], {
+            hoverTreshold: 3,
+            onMousemove: function(tooltip, val) {
+                tooltip.innerHTML = "x:"+val.valX+ ";y:"+val.valY+"<br/>coord X:"+val.x+";coord Y:"+val.y;
+            },
+            onMouseleave: function() {
+                tooltip.innerHTML = "";
+            }
+        });
+
+
+        /* ---- Graph 2 ---- */
+        var graph2 = new Charts.Graph("graph2", {
+            marginTop: 20,
+            marginBottom: 20,
+            marginRight: 20,
+            marginLeft: 20,
+            leftFrame: false,
+            animated: true
+        });
+
+        var _graph2curve = [
+            {x: 0, y:0},
+            {x: 1, y:3},
+            {x: 2, y:0},
+            {x: 5, y:0},
+            {x: 6, y:2},
+            {x: 7, y:0},
+            {x: 40, y:0}
+        ];
+
+        graph2.addCurve(_graph2curve, {
+            curveStrokeStyle: "rgba(255,255,255,0.1)",
+            curveBackground: "rgba(0,0,0,0.1)"
+        });
+
+        graph2.forEachPoint(function() {
+            var _array = [];
+            for (var i=0, j = 40; i<=j; ++i) {
+                _array.push({
+                    x: i,
+                    y: 0
+                })
+            }
+            return _array;
+        }(), function(x, y) {
+
+            graph2.addLine('x', x, y, 20, {strokeStyle: "rgba(0,0,0,0.5)",  offsetY: 10});
+        })
+
+        graph2.render()
+    </script>
+
+</body>
+</html>
